@@ -555,6 +555,24 @@
             </div>
         </div>
 
+        <section id="dashboard-courses-root" aria-label="Kurslar"
+            class="mx-auto mb-6 max-w-3xl rounded-2xl border border-white/10 bg-black/30 p-4 backdrop-blur-md sm:p-5">
+            <div class="mb-3 flex flex-wrap items-end justify-between gap-2">
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-300/90">Kurslar</p>
+                    <p class="mt-1 text-xs text-slate-400">Supabase (<code class="rounded bg-white/10 px-1 text-[11px]">courses</code>) dan yuklanadi</p>
+                </div>
+                <button type="button" id="dashboard-courses-refresh" class="text-[11px] font-semibold uppercase tracking-wide text-fuchsia-200/90 underline-offset-4 hover:text-white hover:underline">
+                    Yangilash
+                </button>
+            </div>
+            <div id="dashboard-courses-status" class="mb-3 hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-300"></div>
+            <ul id="dashboard-courses-list" class="grid gap-2 sm:grid-cols-2"></ul>
+            <p id="dashboard-courses-empty" class="hidden text-center text-sm text-slate-400">
+                Hozircha kurslar yo‘q. Admin <code class="rounded bg-white/10 px-1">courses</code> jadvaliga yozuv qo‘shguncha bu yer bo‘sh turadi.
+            </p>
+        </section>
+
         <div id="dashboard-a2-supervisor" class="mx-auto mb-6 hidden max-w-3xl rounded-2xl border border-amber-500/35 bg-gradient-to-br from-amber-950/65 to-orange-950/45 p-4 text-center shadow-[0_0_32px_rgba(251,191,36,0.14)] sm:p-5" role="region" aria-label="Kunlik nazorat taymeri">
             <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-200/95">A2 · 2 soatlik nazorat rejimi</p>
             <p id="dashboard-supervisor-timer" class="mt-2 font-mono text-3xl font-black tabular-nums tracking-widest text-amber-100 sm:text-4xl">02:00:00</p>

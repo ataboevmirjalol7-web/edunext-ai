@@ -1122,6 +1122,10 @@ function wireDashboardNavigation() {
     showProfileSettingsModal();
   });
 
+  document.getElementById("dashboard-courses-refresh")?.addEventListener("click", () => {
+    void loadDashboardCourses();
+  });
+
   document.querySelectorAll("[data-dash-nav]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const kind = btn.getAttribute("data-dash-nav");
@@ -3951,6 +3955,66 @@ function taskTypeToSectionKey(typeStr) {
   if (t === "listeningdictation") return "listening_bb_dict";
   if (t === "writing") return "writing";
   return null;
+}
+
+/** Dashboard: `courses` jadvalidan nashr etilgan kurslar ro'yxati. */
+async function loadDashboardCourses() {
+  const root = document.getElementById("dashboard-courses-list");
+  const empty = document.getElementById("dashboard-courses-empty");
+  const status = document.getElementById("dashboard-courses-status");
+  const btn = document.getElementById("dashboard-courses-refresh");
+  if (!root || !empty) return;
+
+  root.replaceChildren();
+  empty.classList.add("hidden");
+  if (status) {
+    status.classList.add("hidden");
+    status.textContent = "";
+  }
+  if (btn) btn.disabled = true;
+
+  const sb = ensureSupabase();
+  if (!sb) {
+    empty.classList.remove("hidden");
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  const { data, error } = await sb
+    .from("courses")
+    .select("id,title,subtitle,slug,sort_order")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .limit(50);
+
+  if (btn) btn.disabled = false;
+
+  if (error) {
+    if (status) {
+      status.classList.remove("hidden");
+      status.textContent = `Kurslar yuklanmadi: ${error.message}`;
+    }
+    empty.classList.remove("hidden");
+    return;
+  }
+  if (!data || data.length === 0) {
+    empty.classList.remove("hidden");
+    return;
+  }
+  data.forEach((row) => {
+    const li = document.createElement("li");
+    li.className =
+      "rounded-xl border border-fuchsia-500/20 bg-gradient-to-br from-fuchsia-950/40 to-black/40 p-3";
+    li.innerHTML = `
+      <p class="text-sm font-bold text-white">${escapeHtmlStep11(row.title)}</p>
+      ${
+        row.subtitle
+          ? `<p class="mt-1 text-xs text-slate-400">${escapeHtmlStep11(row.subtitle)}</p>`
+          : ""
+      }
+    `;
+    root.appendChild(li);
+  });
 }
 
 /** A2 dashboard: 2 soatlik nazorat + yakuniy `daily_tests` quiz */
@@ -10651,6 +10715,7 @@ async function goToStep11() {
       await syncWeek1ListeningProgressFromSupabase();
       hydrateDashboardGreetingFromProfile();
       generatePersonalPlan(inferEducationPlanTier());
+      void loadDashboardCourses();
       // Real kartalar paydo bo'lgach overlay'ni silliq yashiramiz.
       hideDashboardInitOverlay();
       initStep11Todos();
