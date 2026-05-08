@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/config.client.js"></script>
+    <title>EduNext AI | Bright Neon Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+            background: #1a0b2e; /* Qora emas, to'q binafsha */
+            overflow: hidden;
+        }
+
+        /* ✨ Yorqin va yiltillovchi fon animatsiyasi */
+        .neon-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #2e1065 0%, #701a75 50%, #4c1d95 100%);
+            background-size: 200% 200%;
+            animation: brightNebula 10s ease infinite alternate;
+        }
+
+        @keyframes brightNebula {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* Fondagi harakatlanuvchi nurli nuqtalar */
+        .light-glow {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(217, 70, 239, 0.4) 0%, transparent 70%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            animation: moveLight 15s infinite linear;
+        }
+
+        @keyframes moveLight {
+            0% { transform: translate(-10%, -10%); }
+            50% { transform: translate(110%, 110%); }
+            100% { transform: translate(-10%, -10%); }
+        }
+
+        /* 🎭 Animatsiyalar */
+
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes textExpand {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes simpleFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #logo-container {
+            animation: slideInFromLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        #brand-name {
+            display: inline-block;
+            animation: textExpand 1.8s ease-out 0.6s forwards;
+            width: 0;
+        }
+
+        #sub-text {
+            animation: simpleFade 1s ease 1.8s forwards;
+        }
+
+        #status-indicator {
+            animation: simpleFade 1s ease 2.5s forwards;
+        }
+
+        @keyframes readingFloatIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes readingPulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(217, 70, 239, 0.0); }
+            50% { box-shadow: 0 0 24px rgba(217, 70, 239, 0.22); }
+        }
+
+        .reading-shell {
+            animation: readingFloatIn 0.55s ease-out forwards;
+        }
+
+        .reading-card {
+            animation: readingFloatIn 0.6s ease-out forwards;
+        }
+
+        .reading-active {
+            animation: readingPulse 1.6s ease-in-out infinite;
+        }
+
+        /* Dashboard: mobil qurilmada silliq vertical scroll */
+        #step-11 {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Kichik ekranda keng bo‘yinadigan chat parchalari */
+        @media (max-width: 380px) {
+            #step-11 .step11-chat-bubble {
+                font-size: 0.8125rem;
+                line-height: 1.45rem;
+            }
+        }
+
+        @keyframes neonOnboardingPulse {
+            0%, 100% {
+                box-shadow:
+                    0 0 24px rgba(217, 70, 239, 0.45),
+                    0 0 56px rgba(124, 58, 237, 0.25),
+                    inset 0 0 40px rgba(217, 70, 239, 0.06);
+            }
+            50% {
+                box-shadow:
+                    0 0 36px rgba(34, 211, 238, 0.35),
+                    0 0 72px rgba(217, 70, 239, 0.4),
+                    inset 0 0 48px rgba(34, 211, 238, 0.08);
+            }
+        }
+
+        @keyframes neonBorderShift {
+            0% { opacity: 0.85; filter: hue-rotate(0deg); }
+            50% { opacity: 1; filter: hue-rotate(15deg); }
+            100% { opacity: 0.85; filter: hue-rotate(0deg); }
+        }
+
+        .neon-onboarding-panel {
+            animation: neonOnboardingPulse 3.2s ease-in-out infinite;
+        }
+
+        .neon-onboarding-ring {
+            background: linear-gradient(135deg, rgba(217, 70, 239, 0.95), rgba(34, 211, 238, 0.55), rgba(124, 58, 237, 0.9));
+            animation: neonBorderShift 4s ease-in-out infinite;
+        }
+
+        /* Dashboard: fixed navbar ostidagi kumush chiziq */
+        #dashboard-nav {
+            border-bottom: 1px solid #c0c0c0;
+        }
+
+        #todo-list {
+            gap: 2rem;
+        }
+
+        #todo-list .task-plan-card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #todo-list .dashboard-step-badge {
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+        }
+
+        #todo-list .dashboard-primary-btn {
+            box-shadow: 0 0 15px #7b2ff7;
+        }
+
+        /* ───────────────────────────────────────────────────────────────
+           Dashboard Skeleton Loading + Fade-in (framer-motion uslubida)
+           Refresh paytida UI sakrab ketmasligi va Supabase ma'lumotlari
+           kelguncha kulrang shimmer-skeletonlar ko'rinishi uchun.
+           ─────────────────────────────────────────────────────────────── */
+        @keyframes dashboardSkeletonShimmer {
+            0%   { background-position: -480px 0; }
+            100% { background-position: 480px 0; }
+        }
+
+        .dashboard-skeleton-shimmer {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.04) 0%,
+                rgba(255, 255, 255, 0.10) 35%,
+                rgba(255, 255, 255, 0.16) 50%,
+                rgba(255, 255, 255, 0.10) 65%,
+                rgba(255, 255, 255, 0.04) 100%
+            );
+            background-size: 480px 100%;
+            animation: dashboardSkeletonShimmer 1.4s linear infinite;
+            border-radius: 0.5rem;
+        }
+
+        .dashboard-skeleton-card {
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        }
+
+        @media (min-width: 640px) {
+            .dashboard-skeleton-card {
+                padding: 1.5rem;
+                gap: 1rem;
+                border-radius: 1.25rem;
+            }
+        }
+
+        /* framer-motion-ga o'xshash silliq fade-in (ease-out cubic-bezier).
+           generatePersonalPlan har bir kartani DOMga qo'shganda
+           .dashboard-fade-in-card klassi qo'shiladi. */
+        @keyframes dashboardFadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(14px) scale(0.985);
+                filter: blur(2px);
+            }
+            60% {
+                filter: blur(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .dashboard-fade-in-card {
+            animation: dashboardFadeInUp 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            will-change: opacity, transform;
+        }
+
+        /* Asosiy «ilk yuklash» overlay — sahifa avval qora ekran ko'rsatmasligi
+           uchun. JS dashboard tayyor bo'lganida hidden klassi qo'shadi. */
+        #dashboard-init-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(
+                ellipse at top,
+                rgba(124, 58, 237, 0.14) 0%,
+                rgba(15, 10, 30, 0.96) 55%,
+                #0f0a1e 100%
+            );
+            backdrop-filter: blur(6px);
+            transition: opacity 320ms ease, visibility 320ms ease;
+        }
+
+        #dashboard-init-overlay.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .dashboard-init-spinner {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 3px solid rgba(217, 70, 239, 0.18);
+            border-top-color: #d946ef;
+            animation: dashboardSpin 900ms linear infinite;
+            box-shadow: 0 0 24px rgba(217, 70, 239, 0.25);
+        }
+
+        @keyframes dashboardSpin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="h-screen w-full overflow-hidden">
+
+    <!--
+        Ilk yuklash overlay'i — sahifa qora flash bilan ochilmasligi uchun.
+        JS bootstrap tugagach (`hideDashboardInitOverlay()`), `is-hidden` klassi
+        qo'shiladi va overlay silliq yo'qoladi.
+    -->
+    <div id="dashboard-init-overlay" role="status" aria-live="polite" aria-label="Yuklanmoqda">
+        <div class="flex flex-col items-center gap-4 text-center">
+            <div class="dashboard-init-spinner" aria-hidden="true"></div>
+            <p class="text-xs font-bold uppercase tracking-[0.32em] text-fuchsia-300/85">EduNext AI</p>
+            <p class="text-sm font-medium text-slate-300/85">Yuklanmoqda…</p>
+        </div>
+    </div>
+
+    <!-- Tizimga kirish / ro‘yxatdan o‘tish (.env SUPABASE_URL, SUPABASE_ANON_KEY) -->
+    <section id="auth-gate" class="fixed inset-0 z-[3000] flex min-h-[100dvh] items-stretch justify-center overflow-y-auto bg-[#0a0618]" aria-labelledby="auth-title">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(217,70,239,0.35),transparent_50%),radial-gradient(ellipse_at_80%_100%,rgba(124,58,237,0.25),transparent_45%)]"></div>
+
+        <div class="relative z-[1] flex w-full max-w-6xl flex-col lg:flex-row">
+            <div class="flex flex-1 flex-col justify-center px-8 py-14 pt-[max(2rem,env(safe-area-inset-top))] lg:py-24 lg:pl-14 lg:pr-10">
+                <p class="text-xs font-bold uppercase tracking-[0.35em] text-fuchsia-400/90">EduNext AI</p>
+                <h1 id="auth-title" class="mt-4 text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-[3.25rem]">
+                    Ta‘lim sahifasi — <span class="text-transparent bg-gradient-to-r from-fuchsia-400 via-purple-300 to-white bg-clip-text">Login / Sign Up</span>
+                </h1>
+                <p class="mt-5 max-w-md text-base leading-relaxed text-slate-400">
+                    Hisobingiz bilan testlarni davom etiring va dashboardda AI mentordan foydalaning.
+                </p>
+                <p id="auth-config-error" class="mt-6 hidden max-w-md rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95" role="alert"></p>
+            </div>
+
+            <div class="flex flex-1 items-center justify-center px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 lg:px-12 lg:py-24">
+                <div class="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[0.07] p-8 shadow-[0_0_80px_rgba(217,70,239,0.12)] backdrop-blur-2xl sm:p-10">
+                    <div class="mb-8 flex rounded-2xl bg-black/30 p-1">
+                        <button type="button" id="auth-tab-login" class="auth-tab flex-1 rounded-xl py-3 text-sm font-bold text-white transition bg-gradient-to-r from-fuchsia-600 to-purple-600 shadow-lg shadow-fuchsia-500/20" aria-selected="true">
+                            Kirish
+                        </button>
+                        <button type="button" id="auth-tab-signup" class="auth-tab flex-1 rounded-xl py-3 text-sm font-bold text-slate-400 transition hover:text-white" aria-selected="false">
+                            Ro‘yxatdan o‘tish
+                        </button>
+                    </div>
+
+                    <p id="auth-form-error" class="mb-4 min-h-[1.25rem] text-center text-sm text-red-400" role="alert"></p>
+
+                    <form id="auth-form-login" class="auth-form-panel space-y-4" autocomplete="on">
+                        <div>
+                            <label for="auth-email-login" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Email</label>
+                            <input id="auth-email-login" name="email" type="email" required inputmode="email" autocomplete="email"
+                                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3.5 text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none focus:ring-1 focus:ring-fuchsia-500" placeholder="siz@mail.uz" />
+                        </div>
+                        <div>
+                            <label for="auth-password-login" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Parol</label>
+                            <input id="auth-password-login" name="password" type="password" required autocomplete="current-password"
+                                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3.5 text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none focus:ring-1 focus:ring-fuchsia-500" placeholder="••••••••" />
+                        </div>
+                        <button type="submit" class="mt-2 w-full rounded-2xl bg-gradient-to-r from-fuchsia-600 to-purple-600 py-3.5 font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:brightness-110 active:scale-[0.99]">
+                            Tizimga kirish
+                        </button>
+                    </form>
+
+                    <form id="auth-form-signup" class="auth-form-panel hidden space-y-4" autocomplete="on">
+                        <div>
+                            <label for="auth-email-signup" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Email</label>
+                            <input id="auth-email-signup" name="email" type="email" required inputmode="email" autocomplete="email"
+                                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3.5 text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none focus:ring-1 focus:ring-fuchsia-500" placeholder="siz@mail.uz" />
+                        </div>
+                        <div>
+                            <label for="auth-password-signup" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Parol</label>
+                            <input id="auth-password-signup" name="password" type="password" required autocomplete="new-password" minlength="6"
+                                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3.5 text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none focus:ring-1 focus:ring-fuchsia-500" placeholder="Kamida 6 belgi" />
+                        </div>
+                        <div>
+                            <label for="auth-password-signup-2" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-400">Parolni tasdiqlang</label>
+                            <input id="auth-password-signup-2" type="password" required autocomplete="new-password" minlength="6"
+                                class="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3.5 text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none focus:ring-1 focus:ring-fuchsia-500" placeholder="Parolni qayta kiriting" />
+                        </div>
+                        <button type="submit" class="mt-2 w-full rounded-2xl border border-fuchsia-500/40 bg-fuchsia-500/15 py-3.5 font-bold text-fuchsia-100 transition hover:bg-fuchsia-500/25 active:scale-[0.99]">
+                            Hisob yaratish
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="onboarding" class="fixed inset-0 z-[500] bg-[#0f0c29] hidden flex items-center justify-center transition-all duration-1000">
+        <div id="step-1" class="step-section flex flex-col items-center max-w-lg w-full p-6 animate-in fade-in duration-700">
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-[2.5rem] w-full relative">
+                <h1 class="text-2xl font-bold text-white mb-4">EduNext AI ga xush kelibsiz</h1>
+                <p class="text-white/60 mb-6 leading-relaxed">
+                    Bu yerda siz yangi ko'nikmalarni shakllantirasiz va sun'iy intellekt yordamida ta'lim olasiz.
+                </p>
+                <p class="text-white/45 text-sm border-t border-white/10 pt-6">
+                    Tizimga kirgach keyingi qadamda yo‘nalish tanlanadi.
+                </p>
+            </div>
+        </div>
+
+        <div id="step-2" class="step-section hidden flex flex-col items-center max-w-lg w-full p-6 animate-in slide-in-from-right duration-700">
+            <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-[2.5rem] w-full relative text-center">
+                <h2 class="text-xl font-medium text-white/80 mb-6">Iltimos o'rganmoqchi bo'lgan ko'nikmangizni tanlang</h2>
+                
+                <button id="skill-btn" class="w-full py-4 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold text-lg hover:bg-white hover:text-[#0f0c29] transition-all duration-300 active:scale-95 mb-10">
+                    🇬🇧 Ingliz tili
+                </button>
+
+                <div class="flex justify-end">
+                    <button id="finish-onboarding" class="bg-white text-[#0f0c29] px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-fuchsia-500 hover:text-white transition-all group">
+                        Keyingi <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="neon-bg" aria-hidden="true"></div>
+    <div class="light-glow" aria-hidden="true"></div>
+
+    <script type="module" src="/script.js"></script>
+
+    <div class="fixed bottom-6 left-8 z-50">
+        <div id="founder-tag" class="opacity-0">
+            <p class="text-[10px] md:text-[11px] text-silver font-medium tracking-[2px] uppercase opacity-60 hover:opacity-100 transition-opacity duration-300">
+                Founded by <span class="font-bold border-b border-white/20">Ataboyev Mirjalol</span>
+            </p>
+        </div>
+    </div>
+
+    <style>
+        /* Kumushrang (Silver) uchun maxsus rang */
+        .text-silver {
+            color: #C0C0C0;
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.2);
+        }
+
+        /* Muallif yozuvi uchun alohida kirish animatsiyasi */
+        @keyframes founderFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 0.6;
+                transform: translateY(0);
+            }
+        }
+
+        #founder-tag {
+            animation: founderFade 1.5s ease-out 3s forwards; /* Logotipdan keyin paydo bo'ladi */
+        }
+    </style>
+
+    <!-- Eski inline Reading/Writing/Listening test oqimlari olib tashlandi; diagnostika: `/diagnostic`. -->
+
+<div id="step-11" class="step-section step-container hidden fixed inset-0 z-[950] flex min-h-[100dvh] touch-manipulation flex-col overflow-y-auto overflow-x-hidden overscroll-y-contain bg-[#0f0a1e] pb-[max(1rem,env(safe-area-inset-bottom))] text-slate-100">
+    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(217,70,239,0.1),transparent_55%)]"></div>
+
+    <header id="dashboard-nav" class="dashboard-nav-el fixed left-0 right-0 top-0 z-[960] flex min-h-[3.5rem] flex-col border-t-2 border-[#c0c0c0] bg-[#0f0a1e]/90 pt-[max(0.5rem,env(safe-area-inset-top))] backdrop-blur-md">
+        <div class="flex h-14 w-full min-w-0 items-center justify-between gap-3 px-3 sm:px-5">
+            <a href="#" class="dashboard-brand-el group flex min-w-0 items-center gap-2.5 no-underline" aria-label="Edu Next bosh sahifa">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 text-sm font-black text-white shadow-lg shadow-fuchsia-500/30">E</span>
+                <span class="min-w-0 text-left">
+                    <span class="block truncate text-base font-black italic leading-tight tracking-tighter text-white sm:text-lg">EDU NEXT</span>
+                    <span id="dashboard-hub-label" class="block text-[10px] font-bold uppercase tracking-[0.2em] text-fuchsia-400">Dashboard</span>
+                </span>
+            </a>
+            <div class="flex shrink-0 items-center gap-2">
+                <button type="button" onclick="hideStep11()" aria-label="Dashboardni yopish" class="hidden min-h-[44px] rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-300 backdrop-blur-md transition hover:border-fuchsia-500/40 hover:text-white sm:inline-flex sm:items-center">
+                    <i class="fas fa-times mr-1.5 opacity-70" aria-hidden="true"></i> Yopish
+                </button>
+                <button type="button" id="dashboard-nav-toggle" aria-expanded="false" aria-controls="dashboard-drawer" class="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-lg text-white transition hover:border-fuchsia-500/50 hover:bg-fuchsia-500/10">
+                    <i class="fas fa-bars" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div id="dashboard-drawer-backdrop" class="dashboard-drawer-ui fixed inset-0 z-[970] hidden bg-black/55 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 pointer-events-none" aria-hidden="true"></div>
+
+    <aside id="dashboard-drawer" class="dashboard-drawer-ui fixed right-0 top-0 z-[980] flex h-[100dvh] max-w-[min(100vw,20rem)] w-full translate-x-full flex-col border-l border-fuchsia-500/25 bg-gradient-to-b from-[#1a0f2e]/98 via-[#12081f]/98 to-[#0a0618] pt-[max(0.75rem,env(safe-area-inset-top))] shadow-[-12px_0_48px_rgba(217,70,239,0.2)] transition-transform duration-300 ease-out" aria-hidden="true" role="dialog" aria-label="Menyu">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_100%_0%,rgba(217,70,239,0.15),transparent_50%)]"></div>
+        <div class="relative flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <span class="text-sm font-bold uppercase tracking-wider text-fuchsia-300">Menyu</span>
+            <button type="button" id="dashboard-drawer-close" class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-slate-300 transition hover:border-fuchsia-500/40 hover:text-white" aria-label="Menyuni yopish">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+        <nav class="relative flex min-h-0 flex-1 flex-col" aria-label="Progress and profile panel">
+            <div class="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+                <section class="rounded-2xl border border-fuchsia-500/30 bg-fuchsia-500/10 p-3 shadow-[0_0_18px_rgba(217,70,239,0.14)]">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-300">Progress & Profile</p>
+                    <div class="mt-3 flex items-center gap-3">
+                        <button type="button" id="pp-avatar" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-fuchsia-400/50 bg-black/45 text-sm font-black text-fuchsia-100 transition hover:border-fuchsia-300/70 cursor-pointer" title="Profilni tahrirlash">U</button>
+                        <div class="min-w-0">
+                            <p id="pp-name" class="truncate text-sm font-bold text-white">Foydalanuvchi</p>
+                            <p id="pp-level" class="text-xs text-slate-300">B1 Intermediate</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="rounded-2xl border border-emerald-500/25 bg-black/30 p-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Daily Growth (7 kun)</p>
+                        <span id="pp-growth-badge" class="rounded-full border border-emerald-400/40 bg-emerald-500/15 px-2 py-1 text-[10px] font-bold text-emerald-300">+0% O'sish 🚀</span>
+                    </div>
+                    <div class="mt-2 mb-2 flex items-center justify-between">
+                        <span id="pp-current-day-date" class="text-xs text-slate-400">08.05.2026</span>
+                        <span id="pp-current-day-grade" class="text-sm font-bold text-fuchsia-300">51%</span>
+                    </div>
+                    <p id="pp-growth-feedback" class="mt-2 text-xs font-semibold text-slate-300">So'nggi natijalar bo'yicha tahlil</p>
+                    <div class="mt-2 h-28 w-full">
+                        <canvas id="pp-growth-chart" class="h-full w-full"></canvas>
+                    </div>
+                    <p id="pp-growth-microcopy" class="mt-2 text-[11px] text-slate-400">Eldorbek, har bir foiz sizni maqsadingizga yaqinlashtiradi!</p>
+                </section>
+
+                <section class="rounded-2xl border border-cyan-500/25 bg-black/30 p-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-300">Skill Breakdown</p>
+                    <div class="mt-3 space-y-2.5" id="pp-skill-breakdown"></div>
+                </section>
+
+                <section class="rounded-2xl border border-amber-500/25 bg-black/30 p-3">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-amber-300">Stats Summary</p>
+                    <div class="mt-3 grid grid-cols-1 gap-2">
+                        <div class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"><span class="text-amber-300">🔥 Current Streak:</span> <span id="pp-streak">0 kun</span></div>
+                        <div class="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"><span class="text-fuchsia-300">🏆 Total XP:</span> <span id="pp-xp">0 XP</span></div>
+                    </div>
+                </section>
+            </div>
+            <div class="mt-auto shrink-0 space-y-3 border-t border-white/10 px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+                <button type="button" id="dashboard-settings-btn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-3 text-center text-sm font-bold text-cyan-200 transition hover:border-cyan-500/55 hover:bg-cyan-500/20">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                    Sozlamalar
+                </button>
+                <button type="button" id="dashboard-logout-btn" class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-center text-sm font-bold text-red-400 transition hover:border-red-500/55 hover:bg-red-500/20">
+                    <svg class="h-[1.125rem] w-[1.125rem] shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Chiqish
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="relative z-[1] mx-auto w-full min-w-0 max-w-7xl flex-1 px-3 pt-[calc(3.5rem+max(0.75rem,env(safe-area-inset-top))+1px)] sm:px-5 md:px-8 md:pb-8">
+        <div class="mb-5 flex justify-end md:hidden">
+            <button type="button" onclick="hideStep11()" aria-label="Dashboardni yopish" class="min-h-[44px] shrink-0 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-300 backdrop-blur-md transition hover:border-fuchsia-500/40 hover:text-white active:scale-[0.98]">
+                <i class="fas fa-times mr-2" aria-hidden="true"></i> Yopish
+            </button>
+        </div>
+
+        <div id="dashboard-home-layout" class="space-y-6">
+        <div class="mx-auto flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+            <div class="min-w-0 text-center sm:text-left">
+                <p id="dashboard-greeting-line" class="max-w-prose text-xs leading-relaxed text-slate-400 sm:text-sm md:text-base">Salom! Bugun 4-o'quv kuni.</p>
+            </div>
+            <div class="text-center sm:text-right">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Joriy daraja</span>
+                <div id="dashboard-level-display" class="text-lg font-bold text-white sm:text-xl md:text-2xl">B1 Intermediate</div>
+                <p id="dashboard-diag-writing-stat" class="mt-2 hidden text-xs font-semibold text-emerald-200/95" aria-live="polite"></p>
+            </div>
+        </div>
+
+        <div id="dashboard-a2-supervisor" class="mx-auto mb-6 hidden max-w-3xl rounded-2xl border border-amber-500/35 bg-gradient-to-br from-amber-950/65 to-orange-950/45 p-4 text-center shadow-[0_0_32px_rgba(251,191,36,0.14)] sm:p-5" role="region" aria-label="Kunlik nazorat taymeri">
+            <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-200/95">A2 · 2 soatlik nazorat rejimi</p>
+            <p id="dashboard-supervisor-timer" class="mt-2 font-mono text-3xl font-black tabular-nums tracking-widest text-amber-100 sm:text-4xl">02:00:00</p>
+            <p class="mt-2 px-2 text-xs leading-relaxed text-amber-50/85">Listening va Writing tugagach, yakuniy testni «Testni boshlash» tugmasi bilan ochasiz (yoki 2 soat tugaganda test avtomatik ochiladi). Sahifani yangilasangiz ham taymer davom etadi.</p>
+            <button type="button" id="dashboard-final-test-start-btn" onclick="onDashboardFinalTestManualStart()" aria-label="Yakuniy testni boshlash" class="mt-4 hidden inline-flex min-h-[48px] w-full items-center justify-center rounded-xl border border-fuchsia-500/45 bg-fuchsia-600/40 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-fuchsia-500/25 transition hover:bg-fuchsia-600/55 sm:inline-flex sm:w-auto sm:min-w-[220px]">
+                Testni boshlash
+            </button>
+            <div id="dashboard-supervisor-passed-row" class="mt-4 hidden rounded-xl border border-emerald-500/35 bg-emerald-950/40 px-3 py-2.5 text-sm font-semibold text-emerald-200">
+                Yakuniy test muvaffaqiyatli yakunlandi — davom ettirishingiz mumkin.
+            </div>
+        </div>
+
+        <div class="mx-auto grid w-full max-w-6xl gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] xl:items-start xl:gap-8">
+        <div id="dashboard-bugungi-reja-section" class="min-w-0 w-full scroll-mt-28 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md sm:rounded-[1.75rem] sm:p-6 md:rounded-[2rem]">
+                <div id="dashboard-30day-progress" class="mb-4 hidden rounded-xl border border-white/10 bg-black/25 p-3">
+                    <div class="mb-1 flex justify-between text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                        <span>30 kunlik reja</span>
+                        <span id="dashboard-plan-progress-label">0/30 kun</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-white/10">
+                        <div id="dashboard-plan-progress-bar" class="h-full rounded-full bg-gradient-to-r from-fuchsia-600 to-purple-500 transition-[width] duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+                <div id="dashboard-30day-outline" class="mb-6 hidden max-h-40 overflow-y-auto rounded-xl border border-white/5 bg-black/20 p-3 text-xs text-slate-400">
+                    <p class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">A2 → B1: 30 kun</p>
+                    <ol id="dashboard-30day-ol" class="list-decimal space-y-0.5 pl-4 marker:text-fuchsia-500/80"></ol>
+                </div>
+                <div id="todo-list" class="space-y-8"></div>
+        </div>
+
+            <div id="dashboard-mentor-panel" class="flex min-h-[min(18rem,45dvh)] min-w-0 w-full flex-col rounded-2xl border border-fuchsia-500/20 bg-gradient-to-br from-fuchsia-600/10 to-purple-600/10 p-4 backdrop-blur-sm sm:rounded-[1.75rem] sm:p-6 md:min-h-[20rem] md:rounded-[2rem] xl:sticky xl:top-[calc(3.75rem+env(safe-area-inset-top))] xl:max-h-[calc(100dvh-5.5rem)]">
+                <div class="mb-2 flex w-full min-w-0 flex-wrap items-start justify-between gap-2">
+                    <h3 class="mb-0 flex min-w-0 flex-1 items-center gap-2 text-base font-bold text-white sm:text-lg">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-fuchsia-500/25 text-fuchsia-300 animate-pulse" aria-hidden="true">
+                            <i class="fas fa-robot text-sm"></i>
+                        </span>
+                        Edu Next AI Mentor
+                    </h3>
+                    <div class="flex shrink-0 items-center gap-1">
+                        <button type="button" onclick="speakStep11LastMentorUtterance()" id="step11-tts-play"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-fuchsia-500/40 bg-fuchsia-500/15 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-fuchsia-100 transition hover:border-fuchsia-400/65 hover:bg-fuchsia-500/25 active:scale-[0.98] sm:h-9 sm:px-2.5 sm:text-[10px]">
+                            <i class="fas fa-volume-up text-[11px]" aria-hidden="true"></i>
+                            <span class="whitespace-nowrap">Ovozli</span>
+                        </button>
+                        <button type="button" onclick="stopStep11MentorSpeech()" id="step11-tts-stop"
+                            class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-white/12 bg-white/5 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-slate-400 transition hover:border-white/25 hover:text-slate-200 active:scale-[0.98] sm:h-9 sm:px-2.5 sm:text-[10px]">
+                            <i class="fas fa-stop text-[10px]" aria-hidden="true"></i>
+                            <span class="whitespace-nowrap">To‘xt</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="ai-chat-content" class="custom-scrollbar flex min-h-0 min-w-0 flex-1 flex-col gap-3 overflow-y-auto overflow-x-hidden pr-1 sm:gap-3 sm:pr-2"></div>
+                <div id="step11-ai-typing" class="hidden py-1 text-xs italic text-fuchsia-300/90">Edu Next AI yozmoqda...</div>
+                <div class="relative mt-3 flex items-stretch gap-2 sm:mt-4">
+                    <input id="step11-ai-input" type="text" enterkeyhint="send" autocomplete="off" placeholder="Savol so'rash..."
+                        class="min-h-[48px] w-full rounded-xl border border-white/10 bg-black/40 py-3 pl-4 pr-14 text-base text-white placeholder:text-slate-500 focus:border-fuchsia-500 focus:outline-none sm:min-h-0 sm:py-3 sm:pr-12 sm:text-sm"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();sendStep11Chat();}">
+                    <button type="button" onclick="sendStep11Chat()" aria-label="Yuborish"
+                        class="absolute right-2 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-500/30 transition hover:bg-fuchsia-500 active:scale-95 sm:h-9 sm:w-9">
+                        <i class="fas fa-paper-plane text-xs" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div id="dashboard-final-assessment-modal" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="daily-final-test-title">
+        <div class="absolute inset-0 bg-[#05030a]/88 backdrop-blur-sm" tabindex="-1"></div>
+        <div class="relative z-[1] flex max-h-[min(90dvh,720px)] w-full max-w-lg flex-col overflow-hidden rounded-[1.75rem] border border-white/12 bg-gradient-to-br from-[#1a1030]/98 to-[#0a0818]/98 shadow-[0_0_52px_rgba(217,70,239,0.28)]">
+            <div class="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-4 py-3 sm:px-5">
+                <h2 id="daily-final-test-title" class="min-w-0 flex-1 text-base font-bold leading-snug text-white sm:text-lg">Kunlik test</h2>
+                <button type="button" onclick="closeDailyFinalAssessmentUI()" aria-label="Yopish" class="shrink-0 rounded-lg border border-white/15 p-2.5 text-slate-400 transition hover:border-white/25 hover:text-white">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div id="daily-final-test-mount" class="custom-scrollbar min-h-[12rem] flex-1 overflow-y-auto px-4 py-4 sm:px-5"></div>
+            <div id="daily-final-test-footer" class="shrink-0 border-t border-white/10 px-4 py-3 sm:px-5"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Onboarding: profiles jadvali (Supabase) — Dashboard ustidan neon modal -->
+<div id="profile-completion-modal" class="fixed inset-0 z-[2100] hidden flex items-center justify-center p-4" aria-hidden="true" role="dialog" aria-labelledby="pc-modal-title" aria-modal="true">
+    <div class="absolute inset-0 bg-[#05030a]/90 backdrop-blur-md" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,rgba(217,70,239,0.25),transparent_50%),radial-gradient(ellipse_at_80%_80%,rgba(34,211,238,0.12),transparent_45%)]" aria-hidden="true"></div>
+    <div class="neon-onboarding-ring relative w-full max-w-md rounded-[2rem] p-[2px] shadow-[0_0_80px_rgba(217,70,239,0.35)]">
+        <div class="neon-onboarding-panel relative overflow-hidden rounded-[1.95rem] border border-white/10 bg-gradient-to-br from-[#1a0f2e]/95 via-[#12081f]/98 to-[#0a0618]/95 p-8 backdrop-blur-xl">
+            <div class="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
+            <div class="pointer-events-none absolute -bottom-16 -left-8 h-36 w-36 rounded-full bg-cyan-400/15 blur-3xl"></div>
+            <div class="relative mb-6 text-center">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-fuchsia-400/40 bg-gradient-to-br from-fuchsia-600/40 to-cyan-400/20 text-fuchsia-100 shadow-[0_0_28px_rgba(217,70,239,0.55)]">
+                    <i class="fas fa-bolt text-2xl" aria-hidden="true"></i>
+                </div>
+                <h2 id="pc-modal-title" class="bg-gradient-to-r from-white via-fuchsia-100 to-cyan-200 bg-clip-text text-xl font-extrabold tracking-tight text-transparent sm:text-2xl">Onboarding</h2>
+                <p class="mt-2 text-sm text-slate-400">Dashboarddan foydalanish uchun ism, familiya va yoshingizni kiriting.</p>
+            </div>
+            <form id="profile-completion-form" class="relative space-y-4">
+                <div>
+                    <label for="profile-first-name" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-cyan-200/80">Ism</label>
+                    <input id="profile-first-name" name="first_name" type="text" required autocomplete="given-name" maxlength="80"
+                        class="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-inner shadow-fuchsia-500/10 placeholder:text-slate-500 focus:border-cyan-400/60 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/40" placeholder="Masalan, Ali" />
+                </div>
+                <div>
+                    <label for="profile-last-name" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-cyan-200/80">Familiya</label>
+                    <input id="profile-last-name" name="last_name" type="text" required autocomplete="family-name" maxlength="80"
+                        class="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-inner shadow-fuchsia-500/10 placeholder:text-slate-500 focus:border-cyan-400/60 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/40" placeholder="Masalan, Valiyev" />
+                </div>
+                <div>
+                    <label for="profile-age" class="mb-1.5 block text-xs font-bold uppercase tracking-wider text-cyan-200/80">Yosh</label>
+                    <input id="profile-age" name="age" type="number" inputmode="numeric" min="1" max="120" required
+                        class="w-full rounded-xl border border-white/15 bg-black/50 px-4 py-3 text-white shadow-inner shadow-fuchsia-500/10 placeholder:text-slate-500 focus:border-cyan-400/60 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/40" placeholder="Masalan, 16" />
+                </div>
+                <p id="pc-form-error" class="min-h-[1.25rem] text-center text-sm text-red-400" role="alert"></p>
+                <button type="submit" class="w-full rounded-2xl border border-fuchsia-400/30 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-fuchsia-500 py-3.5 font-bold text-white shadow-[0_0_24px_rgba(217,70,239,0.45)] transition hover:brightness-110 active:scale-[0.98]">
+                    Saqlash
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Profil saqlangach — diagnostika oldidan neon xabar -->
+<div id="post-profile-welcome-overlay" class="fixed inset-0 z-[2200] hidden flex min-h-[100dvh] items-center justify-center overflow-y-auto bg-[#05030a]/92 p-4 backdrop-blur-md" aria-hidden="true" role="dialog" aria-labelledby="post-profile-welcome-title">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(217,70,239,0.35),transparent_55%)]"></div>
+    <div class="relative z-[1] w-full max-w-lg rounded-[2rem] border border-fuchsia-500/40 bg-gradient-to-br from-[#1a0f2e]/95 to-[#0a0618]/98 p-8 text-center shadow-[0_0_60px_rgba(217,70,239,0.4)] sm:p-10">
+        <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-600 to-cyan-500 text-2xl text-white shadow-lg shadow-fuchsia-500/40">
+            <i class="fas fa-bolt" aria-hidden="true"></i>
+        </div>
+        <p id="post-profile-welcome-title" class="text-lg font-semibold leading-relaxed text-white sm:text-xl">
+            Ajoyib! Ko'nikmalarni boshlashimizdan oldin sizning darajangizni aniqlab olishimiz kerak.
+        </p>
+        <button type="button" id="post-profile-continue-btn" class="mt-8 w-full min-h-[52px] rounded-2xl border border-cyan-400/40 bg-gradient-to-r from-fuchsia-600 via-purple-600 to-cyan-500 py-3.5 text-base font-bold text-white shadow-[0_0_28px_rgba(217,70,239,0.45)] transition hover:brightness-110 active:scale-[0.98]">
+            Davom etish
+        </button>
+    </div>
+</div>
+</body>
+</html>

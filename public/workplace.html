@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        html, body { height: 100%; margin: 0; }
+        .wp-chat-scroll { scrollbar-gutter: stable; }
+    </style>
+</head>
+<body class="flex min-h-[100dvh] flex-col bg-[#0a0614] text-slate-100">
+    <!-- Navbar: silver accent tepada -->
+    <header class="sticky top-0 z-20 shrink-0 border-t-2 border-[#c0c0c0] border-b border-white/10 bg-[#0a0614]/95 backdrop-blur-md">
+        <div class="flex h-14 items-center justify-between gap-3 px-4">
+            <div class="min-w-0">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-400/90">Workplace</p>
+                <h1 id="wp-headline" class="truncate text-sm font-bold text-white sm:text-base">Grammar</h1>
+                <p id="wp-sub" class="truncate text-xs text-slate-500"></p>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+                <span id="wp-page-badge" class="hidden rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-mono text-slate-400 sm:inline"></span>
+                <a href="/" class="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-fuchsia-200 transition hover:border-fuchsia-500/40 hover:text-white">
+                    <i class="fas fa-arrow-left mr-1.5" aria-hidden="true"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 40% AI | 60% PDF -->
+    <div class="flex min-h-0 flex-1 flex-col md:flex-row">
+        <section class="flex min-h-[42dvh] min-w-0 flex-[2] flex-col border-b border-white/10 md:min-h-0 md:border-b-0 md:border-r md:border-white/10">
+            <div class="border-b border-white/5 px-3 py-2">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-fuchsia-300/90">EduNext AI</h2>
+                <p class="text-[11px] text-slate-500">“Page 56” yozing — PDF shu sahifaga o‘tadi.</p>
+            </div>
+            <div id="wp-chat" class="wp-chat-scroll flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-3"></div>
+            <div id="wp-typing" class="hidden px-3 py-1 text-[11px] italic text-fuchsia-300/80">AI yozmoqda…</div>
+            <div class="flex gap-2 border-t border-white/10 p-3">
+                <input id="wp-input" type="text" enterkeyhint="send" autocomplete="off" placeholder="Savol yoki Page 12…"
+                    class="min-h-[44px] min-w-0 flex-1 rounded-xl border border-white/15 bg-black/30 px-3 text-sm text-white placeholder:text-slate-500 focus:border-fuchsia-500/50 focus:outline-none" />
+                <button type="button" id="wp-send" class="shrink-0 rounded-xl bg-fuchsia-600 px-4 text-sm font-bold text-white transition hover:bg-fuchsia-500 active:scale-[0.98]">
+                    Jo‘natish
+                </button>
+            </div>
+        </section>
+
+        <section class="relative flex min-h-[50dvh] min-w-0 flex-[3] flex-col bg-black/40 md:min-h-0">
+            <p id="wp-fallback" class="hidden max-w-md p-6 text-sm text-slate-400">
+                PDF topilmadi. <code class="rounded bg-white/10 px-1">public/pdfs/</code> ichiga fayl qo‘shing
+                (<span id="wp-fallback-name"></span>).
+            </p>
+            <object id="wp-pdf" type="application/pdf" title="PDF" data=""
+                class="h-full min-h-[50dvh] w-full flex-1 border-0 md:min-h-0">
+                <div class="flex min-h-[50dvh] flex-col items-center justify-center gap-4 bg-[#1a1425] p-8 text-center text-white">
+                    <i class="fas fa-file-pdf text-5xl text-red-400/90" aria-hidden="true"></i>
+                    <p class="max-w-md text-sm text-slate-300">
+                        PDF yuklanmadi. Fayl <code class="rounded bg-white/10 px-1">public/pdfs/</code> papkasida ekanligini tekshiring
+                        (<span id="wp-object-fallback-name" class="text-fuchsia-300"></span>).
+                    </p>
+                    <a id="wp-pdf-external-link" href="/pdfs/grammar_a1_a2.pdf.pdf" target="_blank" rel="noopener noreferrer"
+                        class="text-cyan-400 underline decoration-cyan-400/60 hover:text-cyan-300">
+                        Faylni alohida oynada ochish
+                    </a>
+                </div>
+            </object>
+        </section>
+    </div>
+
+    <script type="module">
+        import { A2_B1_STUDY_META } from "/studyPlan.js";
+
+        function apiUrl(pathStr) {
+            let p = String(pathStr ?? "").trim();
+            if (!p.startsWith("/")) p = "/" + p;
+            const base =
+                typeof globalThis.APP_CONFIG?.apiBase === "string"
+                    ? globalThis.APP_CONFIG.apiBase.trim().replace(/\/+$/, "")
+                    : "";
+            return base ? `${base}${p}` : p;
+        }
+
+        function inferPlanTier() {
+            try {
+                const grammar = JSON.parse(localStorage.getItem("grammarLexisResults") || "null");
+                const reading = JSON.parse(localStorage.getItem("readingResults") || "null");
+                const levelRaw = String(reading?.levelResult || grammar?.level || "").trim();
+                const mBand = levelRaw.match(/\b([ABC][12])\b/i);
+                if (mBand) return mBand[1].toUpperCase();
+                if (/beginner|elementary|a1|a2/i.test(levelRaw)) return "A2";
+                if (/advanced|c1|c2/i.test(levelRaw)) return "C1";
+                return "B1";
+            } catch (_) {
+                return "B1";
+            }
+        }
+
+        function extractLastPageMention(text) {
+            const s = String(text || "");
+            let last = null;
+            const re = /\bPage\s+(\d{1,4})\b/gi;
+            let m;
+            while ((m = re.exec(s)) !== null) last = Math.max(1, parseInt(m[1], 10));
+            return last;
+        }
+
+        const CHAT_KEY = "edunext_workplace_chat_v1";
+        const MAX_HIST = 4;
+
+        const params = new URLSearchParams(location.search);
+        const book = (params.get("book") || "grammar").toLowerCase();
+        const unit = params.get("unit") || "1";
+        let initialPage = Math.max(1, parseInt(params.get("page") || "1", 10) || 1);
+
+        const pdfPath =
+            book === "reading"
+                ? A2_B1_STUDY_META.readingPdfPath || "/pdfs/A2-B1-Reading.pdf.pdf"
+                : A2_B1_STUDY_META.workplacePdfPath || "/pdfs/grammar_a1_a2.pdf.pdf";
+
+        const headlineEl = document.getElementById("wp-headline");
+        const subEl = document.getElementById("wp-sub");
+        const badgeEl = document.getElementById("wp-page-badge");
+        const pdfEl = document.getElementById("wp-pdf");
+        const fallbackEl = document.getElementById("wp-fallback");
+        const fallbackNameEl = document.getElementById("wp-fallback-name");
+        const objectFallbackNameEl = document.getElementById("wp-object-fallback-name");
+        const chatEl = document.getElementById("wp-chat");
+        const inputEl = document.getElementById("wp-input");
+        const sendBtn = document.getElementById("wp-send");
+        const typingEl = document.getElementById("wp-typing");
+
+        if (book === "reading") {
+            headlineEl.textContent = A2_B1_STUDY_META.readingBook;
+            subEl.textContent = `Oxford Bookworms · kun ${unit}`;
+            document.title = "Reading · Workplace";
+        } else {
+            headlineEl.textContent = A2_B1_STUDY_META.grammarBook;
+            subEl.textContent = `Unit ${unit} · Murphy`;
+            document.title = `Unit ${unit} · Workplace`;
+        }
+
+        const pdfFileName = pdfPath.split("/").pop() || pdfPath;
+        fallbackNameEl.textContent = pdfFileName;
+        if (objectFallbackNameEl) objectFallbackNameEl.textContent = pdfFileName;
+        const extLinkInit = document.getElementById("wp-pdf-external-link");
+        if (extLinkInit) extLinkInit.href = pdfPath.split("#")[0];
+
+        let currentPage = initialPage;
+
+        function pdfUrlForPage(n) {
+            const base = pdfPath.split("#")[0];
+            const page = Math.max(1, Math.floor(Number(n)) || 1);
+            return `${base}#page=${page}&view=FitH`;
+        }
+
+        function setPdfPage(n) {
+            currentPage = Math.max(1, Math.floor(Number(n)) || 1);
+            const u = pdfUrlForPage(currentPage);
+            pdfEl.data = u;
+            const extLink = document.getElementById("wp-pdf-external-link");
+            if (extLink) extLink.href = u;
+            badgeEl.textContent = `Page ${currentPage}`;
+            badgeEl.classList.remove("hidden");
+        }
+
+        function bubble(role, text) {
+            const wrap = document.createElement("div");
+            wrap.dataset.role = role;
+            wrap.className = role === "user" ? "flex justify-end" : "flex justify-start";
+            const inner = document.createElement("div");
+            inner.className =
+                role === "user"
+                    ? "max-w-[92%] rounded-2xl rounded-tr-sm border border-fuchsia-500/30 bg-fuchsia-500/15 px-3 py-2 text-xs leading-relaxed text-white sm:text-sm"
+                    : "max-w-[92%] rounded-2xl rounded-tl-sm border border-white/10 bg-white/5 px-3 py-2 text-xs leading-relaxed text-slate-200 sm:text-sm";
+            inner.textContent = text;
+            wrap.appendChild(inner);
+            chatEl.appendChild(wrap);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function loadHistory() {
+            try {
+                const raw = localStorage.getItem(CHAT_KEY + ":" + book);
+                const arr = JSON.parse(raw || "[]");
+                if (Array.isArray(arr)) {
+                    for (const x of arr.slice(-20)) {
+                        if (x?.role && x?.text) bubble(x.role, x.text);
+                    }
+                }
+            } catch (_) {
+                /* ignore */
+            }
+        }
+
+        function pushHistory(role, text) {
+            try {
+                const key = CHAT_KEY + ":" + book;
+                let arr = [];
+                try {
+                    arr = JSON.parse(localStorage.getItem(key) || "[]");
+                } catch (_) {
+                    arr = [];
+                }
+                if (!Array.isArray(arr)) arr = [];
+                arr.push({ role, text: String(text || "").slice(0, 4000) });
+                while (arr.length > 40) arr.shift();
+                localStorage.setItem(key, JSON.stringify(arr));
+            } catch (_) {
+                /* ignore */
+            }
+        }
+
+        function historyForApi() {
+            const wraps = [...chatEl.querySelectorAll("[data-role]")];
+            const trimmed =
+                wraps.length && wraps[wraps.length - 1].dataset.role === "user"
+                    ? wraps.slice(0, -1)
+                    : wraps;
+            const turns = [];
+            for (const w of trimmed) {
+                const role = w.dataset.role === "user" ? "user" : "model";
+                const t = w.textContent?.trim() ?? "";
+                if (t) turns.push({ role, text: t });
+            }
+            return turns.slice(-MAX_HIST).map((t) => ({
+                role: t.role,
+                text: t.text,
+            }));
+        }
+
+        function mentorContextPayload() {
+            return {
+                source: "workplace",
+                planTier: inferPlanTier(),
+                displayBand: inferPlanTier(),
+                unit: String(unit),
+                workplaceBook: book === "reading" ? "reading" : "grammar",
+                pdfPath,
+                currentPage: String(currentPage),
+            };
+        }
+
+        async function sendChat(userMsg) {
+            const msg = String(userMsg || "").trim();
+            if (!msg) return;
+
+            const userPage = extractLastPageMention(msg);
+            if (userPage != null) setPdfPage(userPage);
+
+            bubble("user", msg);
+            pushHistory("user", msg);
+
+            typingEl.classList.remove("hidden");
+            sendBtn.disabled = true;
+
+            try {
+                const res = await fetch(apiUrl("/api/ai/chat"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: msg,
+                        history: historyForApi(),
+                        mentorContext: mentorContextPayload(),
+                    }),
+                });
+                const data = await res.json().catch(() => ({}));
+                const reply =
+                    typeof data?.reply === "string" && data.reply.trim()
+                        ? data.reply.trim()
+                        : typeof data?.error === "string"
+                          ? data.error
+                          : "Javob olinmadi.";
+                bubble("model", reply);
+                pushHistory("model", reply);
+
+                const aiPage = extractLastPageMention(reply);
+                if (aiPage != null) setPdfPage(aiPage);
+            } catch (_) {
+                bubble("model", "Tarmoq xatosi. Qayta urinib ko‘ring.");
+            } finally {
+                typingEl.classList.add("hidden");
+                sendBtn.disabled = false;
+            }
+        }
+
+        sendBtn.addEventListener("click", () => {
+            sendChat(inputEl.value);
+            inputEl.value = "";
+        });
+        inputEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendChat(inputEl.value);
+                inputEl.value = "";
+            }
+        });
+
+        fetch(pdfPath, { method: "HEAD" })
+            .then((r) => {
+                if (!r.ok) throw new Error("missing");
+                setPdfPage(currentPage);
+            })
+            .catch(() => {
+                fallbackEl.classList.remove("hidden");
+                pdfEl.classList.add("hidden");
+            });
+
+        loadHistory();
+
+        window.addEventListener("message", (ev) => {
+            const d = ev.data;
+            if (d && typeof d === "object" && d.type === "edunext-pdf-page" && typeof d.page === "number") {
+                setPdfPage(d.page);
+            }
+        });
+    </script>
+</body>
+</html>
