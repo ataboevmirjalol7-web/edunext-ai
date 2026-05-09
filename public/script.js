@@ -1721,9 +1721,9 @@ function setAuthTab(mode) {
   if (err) err.textContent = "";
 
   const active =
-    "rounded-xl py-3 text-sm font-bold text-white transition bg-gradient-to-r from-fuchsia-600 to-purple-600 shadow-lg shadow-fuchsia-500/20";
+    "rounded-lg py-2 text-[0.8125rem] font-bold text-white transition sm:rounded-xl sm:py-2.5 sm:text-sm md:py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 shadow-lg shadow-fuchsia-500/20";
   const idle =
-    "rounded-xl py-3 text-sm font-bold text-slate-400 transition hover:text-white";
+    "rounded-lg py-2 text-[0.8125rem] font-bold text-slate-400 transition hover:text-white sm:rounded-xl sm:py-2.5 sm:text-sm md:py-3";
 
   if (mode === "signup") {
     loginTab?.setAttribute("aria-selected", "false");
