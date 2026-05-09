@@ -4,7 +4,8 @@ const dotenv = require('dotenv');
 const path = require('path');
 const cors = require('cors');
 
-dotenv.config();
+// Ish katalogni qayerdan ishga tushirganingizdan qat'i nazar, loyiha ildizidagi .env dan o'qiladi.
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 if (!String(process.env.GROQ_API_KEY || '').trim()) {
     console.warn('⚠️  GROQ_API_KEY .env da mavjud emas — /api/ai/chat va Writing tekshiruvi ishlamaydi.');
@@ -85,4 +86,13 @@ app.get('/dashboard/vocabulary', sendIndexHtml);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Server http://localhost:${PORT} manzilida ishga tushdi`);
+    const su = String(process.env.SUPABASE_URL || '').trim();
+    const sk = String(process.env.SUPABASE_ANON_KEY || '').trim();
+    if (!su || !sk) {
+        console.warn(
+            '⚠️  SUPABASE_URL yoki SUPABASE_ANON_KEY .env da bo‘sh — brauzerda /config.client.js Supabase ulanishsiz bo‘ladi (Dashboard Auth, profiles, kurslar).',
+        );
+    } else {
+        console.log('✅ Supabase uchun /config.client.js sozlandi (URL mavjud, anon/publishable kalit mavjud).');
+    }
 });
