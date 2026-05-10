@@ -614,7 +614,9 @@ async function renderProgressProfilePanel() {
     Math.max(0, Math.min(100, Math.round(Number(x?.g || 0)))),
   );
   const labels = values.map((_, i) => `D${i + 1}`);
-  await renderGrowthAreaChart(labels, values);
+  if (document.getElementById("pp-growth-chart") instanceof HTMLCanvasElement) {
+    await renderGrowthAreaChart(labels, values);
+  }
   const cur = Number(values[values.length - 1] || 0);
   const prev = Number(values[values.length - 2] || 0);
   const growth = values.length >= 2 ? cur - prev : 0;
