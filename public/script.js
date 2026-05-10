@@ -9690,11 +9690,17 @@ function generatePersonalPlan(level) {
       (level === "A2" || level === "B1") &&
       typeLowerForTag === "reading" &&
       item.dashboardTimedReading;
+    const isWritingDashboardSection =
+      (level === "A2" || level === "B1") &&
+      typeLowerForTag === "writing" &&
+      item.dashboardWriting;
     const taskLine = document.createElement("p");
     taskLine.setAttribute("data-task-line", "");
     taskLine.className = isTimedReadingSection
       ? "mt-1 text-base font-semibold leading-snug text-slate-300 sm:text-lg"
-      : "mt-1 text-base font-semibold leading-snug text-white sm:text-lg";
+      : isWritingDashboardSection
+        ? "mt-1 text-base font-semibold leading-snug text-[#c0c0c0] sm:text-lg"
+        : "mt-1 text-base font-semibold leading-snug text-white sm:text-lg";
     taskLine.textContent = isTimedReadingSection ? "Reading Section" : item.task || "";
     if (!String(item.task || "").trim()) taskLine.classList.add("hidden");
     titleBlock.append(typeTag, taskLine);

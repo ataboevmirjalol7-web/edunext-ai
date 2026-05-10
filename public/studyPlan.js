@@ -731,8 +731,7 @@ export function dashboardGrammarReadingTasksForTier(tier, dayIndex) {
         dashboardListeningDictation: true,
       },
       {
-        task:
-          "CEFR B1 Writing — dashboarddagi rasm/mavzu paketi bo‘yicha (aniq matn Supabase writing_tasks jadvalida).",
+        task: "writing section",
         type: "Writing",
         dashboardWriting: true,
         writingLevel: "B1",
