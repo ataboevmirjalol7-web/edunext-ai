@@ -9643,8 +9643,8 @@ function generatePersonalPlan(level) {
     hintEl.textContent = `30 kunlik roadmap · kun ${studyDay}/30 (Listening + Writing ostida BBC diktat)`;
     hintEl.classList.remove("hidden");
   } else if (level === "B1") {
-    hintEl.textContent = `B1 · Grammar → Listening → Writing → timed Reading · kun ${studyDay}/30`;
-    hintEl.classList.remove("hidden");
+    hintEl.textContent = "";
+    hintEl.classList.add("hidden");
   } else {
     hintEl.classList.add("hidden");
   }
@@ -9788,7 +9788,9 @@ function generatePersonalPlan(level) {
     if (
       item.href &&
       !(typeLower === "listening" && item.youtubeId) &&
-      (typeLower === "listening" || typeLower === "reading" || typeLower === "grammar") &&
+      (typeLower === "listening" ||
+        typeLower === "reading" ||
+        (typeLower === "grammar" && !item.dashboardPhasedGrammar)) &&
       !(readingTimedMarkedDone && typeLower === "reading")
     ) {
       const ext = document.createElement("a");
@@ -9878,9 +9880,7 @@ function generatePersonalPlan(level) {
         {
           pdfHref: String(item.pdfUrl || resolvePdfLinkForTaskType(item.type) || "").trim(),
           grammarLabel: String(item.task || "").trim() || "Grammar",
-          grammarDescription:
-            String(item.description || item.context || "").trim() ||
-            "Chapda mavzu va PDF darslik, o‘ngda shu mavzuga oid testlar.",
+          grammarDescription: String(item.description || item.context || "").trim(),
         },
       );
     }
