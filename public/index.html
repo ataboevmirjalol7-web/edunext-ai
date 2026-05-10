@@ -296,6 +296,17 @@
         @keyframes dashboardSpin {
             to { transform: rotate(360deg); }
         }
+
+        /* EduNextPay — to‘liq blokirovka overlay (#payment-overlay) — hover uchun */
+        #payment-overlay a[href^="https://t.me"]:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.45);
+        }
+
+        #payment-overlay a[href^="https://t.me"]:focus-visible {
+            outline: 2px solid rgba(168, 85, 247, 0.9);
+            outline-offset: 3px;
+        }
     </style>
 </head>
 <body class="h-screen w-full overflow-hidden">
@@ -717,6 +728,31 @@
             Davom etish
         </button>
     </div>
+</div>
+
+<!-- EduNextPay: blokirovka overlay (script.js → checkAccess / showPaymentModal) -->
+<input type="hidden" id="payment-modal-user-id" value="" autocomplete="off" aria-hidden="true" />
+<div
+    id="payment-overlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; color:white; text-align:center; padding:100px 20px 24px; box-sizing:border-box; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="payment-overlay-title"
+>
+    <h1 id="payment-overlay-title" style="color:#A855F7;">Bepul tarifingiz tugadi ⏳</h1>
+    <p style="font-size:1.2rem; margin:20px; max-width:32rem; margin-left:auto; margin-right:auto; line-height:1.55;">
+        Saytdan foydalanishni davom ettirish uchun <br />
+        1 oylik obunani faollashtiring (20 000 so'm).
+    </p>
+    <a
+        href="https://t.me/EduNextpaybot"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="display:inline-block; background:#A855F7; color:white; padding:15px 30px; border-radius:10px; text-decoration:none; font-weight:bold; font-size:1.1rem; transition: filter 0.2s ease, box-shadow 0.2s ease;"
+    >
+        Telegram Bot orqali to'lash 🚀
+    </a>
 </div>
 </body>
 </html>

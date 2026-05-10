@@ -44,6 +44,9 @@ app.get('/config.client.js', (req, res) => {
         apiBase,
         supabaseUrl: String(process.env.SUPABASE_URL || '').trim().replace(/\/+$/, ''),
         supabaseAnonKey: String(process.env.SUPABASE_ANON_KEY || '').trim(),
+        paymentCheckoutUrl: String(process.env.PAYMENT_CHECKOUT_URL || '')
+            .trim()
+            .replace(/\/+$/, ''),
     };
     const cfgSerialized = JSON.stringify(cfgObj);
     const apiBaseLit = JSON.stringify(apiBase);

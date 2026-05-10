@@ -983,6 +983,92 @@ function hidePostProfileWelcomeOverlay() {
   document.body.style.overflow = "";
 }
 
+const PAYMENT_MODAL_DISMISS_KEY = "edunext_payment_modal_dismiss_session_v1";
+
+function closePaymentModal() {
+  const overlay = document.getElementById("payment-overlay");
+  if (!overlay) return;
+  overlay.style.display = "none";
+  overlay.setAttribute("aria-hidden", "true");
+}
+
+function dismissPaymentModalForSession() {
+  try {
+    sessionStorage.setItem(PAYMENT_MODAL_DISMISS_KEY, "1");
+  } catch (_) {
+    /* ignore */
+  }
+  closePaymentModal();
+}
+
+/** `userId` — yashirin maydonda (bot / chek bog‘lashi uchun). */
+function showPaymentModal(userId) {
+  try {
+    if (sessionStorage.getItem(PAYMENT_MODAL_DISMISS_KEY)) return;
+  } catch (_) {
+    /* ignore */
+  }
+  const overlay = document.getElementById("payment-overlay");
+  if (!overlay) return;
+  const uidEl = document.getElementById("payment-modal-user-id");
+  if (uidEl) uidEl.value = String(userId ?? "");
+  overlay.style.display = "block";
+  overlay.setAttribute("aria-hidden", "false");
+}
+
+let __paymentModalListenersBound = false;
+function setupPaymentModalUIOnce() {
+  if (__paymentModalListenersBound) return;
+  __paymentModalListenersBound = true;
+
+  const overlay = document.getElementById("payment-overlay");
+  overlay?.addEventListener("click", (e) => {
+    if (e.target === overlay) dismissPaymentModalForSession();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const o = document.getElementById("payment-overlay");
+    if (!o || o.style.display === "none") return;
+    dismissPaymentModalForSession();
+  });
+}
+setupPaymentModalUIOnce();
+
+/** 24 soat + premium tekshiruvi (to‘lov overlay). Tekshirishni boshqa joydan ham chaqirish mumkin. */
+const checkAccess = async () => {
+  const sb = ensureSupabase();
+  if (!sb) return;
+
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
+  if (!user) return;
+
+  const { data: profile, error } = await sb
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("[checkAccess]", error.message);
+    return;
+  }
+  if (!profile) return;
+
+  if (profile.is_premium) return;
+
+  const regDate = new Date(profile.created_at);
+  if (!profile.created_at || Number.isNaN(regDate.getTime())) return;
+
+  const hoursPassed = (Date.now() - regDate.getTime()) / (1000 * 60 * 60);
+
+  if (hoursPassed > 24) {
+    showPaymentModal(user.id);
+  }
+};
+
 function shortCefrLabelFromBand(bandRaw) {
   const t = String(bandRaw ?? "")
     .toUpperCase()
@@ -2085,6 +2171,7 @@ async function applyAuthRouting(session) {
   if (!user) {
     __sbUser = null;
     __edunextProfile = null;
+    closePaymentModal();
     closeProfileCompletionModal();
     document.body.style.overflow = "";
     document.getElementById("step-11")?.classList.add("hidden");
@@ -2123,6 +2210,7 @@ async function applyAuthRouting(session) {
   if (!restored) {
     goToStep11();
   }
+  void checkAccess();
 }
 
 async function bootstrapSupabaseAuth() {
@@ -10824,6 +10912,9 @@ window.showStep11 = showStep11;
 window.hideStep11 = hideStep11;
 window.sendStep11Chat = sendStep11Chat;
 window.closeDailyFinalAssessmentUI = closeDailyFinalAssessmentUI;
+window.showPaymentModal = showPaymentModal;
+window.closePaymentModal = closePaymentModal;
+window.checkAccess = checkAccess;
 window.onDashboardFinalTestManualStart = onDashboardFinalTestManualStart;
 window.speakStep11LastMentorUtterance = speakStep11LastMentorUtterance;
 window.stopStep11MentorSpeech = stopStep11MentorSpeech;

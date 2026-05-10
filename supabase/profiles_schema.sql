@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     age INTEGER,
     level TEXT,
     study_plan_start_date TEXT,
+    is_premium BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );

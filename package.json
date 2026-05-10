@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "bot": "node bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,13 +15,14 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
     "@google/generative-ai": "^0.24.1",
+    "@supabase/supabase-js": "^2.49.8",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "grammy": "^1.42.0",
     "groq-sdk": "^1.1.2",
     "mongoose": "^9.5.0",
-    "@supabase/supabase-js": "^2.49.8",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "undici": "^7.25.0"
