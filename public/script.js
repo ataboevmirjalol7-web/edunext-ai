@@ -5002,40 +5002,6 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
       </div>`;
   };
 
-  doneBtn.onclick = (ev) => {
-    if (doneBtn.disabled) return;
-    ev.preventDefault();
-    markDaySectionComplete(dayNum, "listening_bb_dict");
-    mainCb.checked = true;
-    toggleTask(mainCb);
-    persistStep11Todos();
-    doneBtn.disabled = true;
-    doneBtn.textContent = "VAZIFANI TUGATDIM — bajarildi";
-    refreshDashboardPlanProgress(planLevel);
-    // Strict ketma-ketlikda: Listening tugagach Writing kartasiga o‘tamiz.
-    try {
-      if (typeof generatePersonalPlan === "function") {
-        generatePersonalPlan(planLevel);
-        window.requestAnimationFrame(() => {
-          const target = document.querySelector(
-            '#todo-list [data-task-card-for="writing"]',
-          );
-          if (target) {
-            target.classList.remove("hidden");
-            target.scrollIntoView({ behavior: "smooth", block: "center" });
-            target.classList.add("ring-2", "ring-fuchsia-500/45");
-            window.setTimeout(
-              () => target.classList.remove("ring-2", "ring-fuchsia-500/45"),
-              1400,
-            );
-          }
-        });
-      }
-    } catch (_) {
-      /* ignore */
-    }
-  };
-
   if (alreadyDoneSection) {
     doneBtn.disabled = true;
     doneBtn.textContent = "VAZIFANI TUGATDIM — bajarildi";
@@ -5109,11 +5075,9 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
     mount.innerHTML = `
       <div class="space-y-8">
         <div class="flex flex-wrap items-start justify-between gap-4 rounded-2xl border border-fuchsia-500/35 bg-black/35 px-5 py-4 sm:p-5">
-          <div class="min-w-0">
-            <p class="text-[10px] font-black uppercase tracking-[0.18em] text-fuchsia-300/95">Day ${escapeHtmlStep11(String(dayNum))} — Diktat</p>
-            <h4 class="mt-1 text-lg font-black text-white sm:text-xl">Tinglash va yozish</h4>
-            <p class="mt-1 max-w-prose text-sm text-slate-400">Bu pleer — kunlik diktant (listening_tasks). Bo‘limga kirgan zahoti audio va 20:00 taymer avtomatik ishga tushadi.</p>
-          </div>
+          <p class="min-w-0 flex-1 text-sm font-medium leading-relaxed text-slate-200 sm:pr-4">
+            faqat 20 daqiqa davomida eshitganlaringizni yozishingiz kerak
+          </p>
           <div class="shrink-0 rounded-2xl border-2 border-fuchsia-500/70 bg-black px-4 py-2.5 text-right shadow-[0_0_20px_rgba(168,85,247,0.22)]">
             <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Qolgan vaqt</p>
             <p data-listening-banner-timer class="font-mono text-2xl font-black tabular-nums text-fuchsia-300 sm:text-3xl">${escapeHtmlStep11(formatListenCountdown(msLeft))}</p>
@@ -5137,10 +5101,6 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
             AI tahlili
           </button>
           <p data-lnd-ai-micro class="text-center text-[11px] leading-snug text-slate-400">AI oficial transkript bilan siz yozgan diktatni taqqoslaydi.</p>
-          <button type="button" data-lnd-check
-            class="dashboard-primary-btn inline-flex min-h-[40px] w-full items-center justify-center rounded-xl border border-fuchsia-500/40 bg-fuchsia-600/15 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-fuchsia-200/95 transition hover:bg-fuchsia-600/25">
-            So‘zma-so‘z tekshiruv
-          </button>
         </div>
         <div data-lnd-result class="mt-3 hidden rounded-lg border border-white/10 bg-black/35 p-3 text-xs text-slate-100"></div>
         <div data-lnd-writing-cta-wrap class="mt-5 hidden">
@@ -5159,7 +5119,6 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
     const ta = mount.querySelector("[data-lnd-ta]");
     const actionsWrap = mount.querySelector("[data-lnd-actions]");
     const aiBtn = mount.querySelector("[data-lnd-ai-btn]");
-    const checkBtn = mount.querySelector("[data-lnd-check]");
     const resultRoot = mount.querySelector("[data-lnd-result]");
     const writingCtaWrap = mount.querySelector("[data-lnd-writing-cta-wrap]");
     const writingCtaBtn = mount.querySelector("[data-lnd-writing-cta]");
@@ -5174,7 +5133,6 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
       cleanupTimer();
       timerRunning = false;
       if (aiBtn) aiBtn.disabled = true;
-      if (checkBtn) checkBtn.disabled = true;
       markDaySectionComplete(dayNum, "listening_bb_dict");
       mainCb.checked = true;
       toggleTask(mainCb);
@@ -5260,7 +5218,7 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
         doneBtn.disabled = true;
         if (footHint)
           footHint.textContent =
-            'Vaqt tugadi. Ostidagi «AI tahlili» orqali yozgan diktantingiz rasmiy transkript bilan solishtiriladi (80%+ → muvaffaqiyat). Kerak bo\'lsa «So\'zma-so\'z tekshiruv».';
+            "Vaqt tugadi. «AI tahlili» tugmasidan foydalanib yozgan diktantingizni transkript bilan solishtiring (80%+ → muvaffaqiyat).";
         updateDictationActionsVisibility();
         try {
           actionsWrap?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -5353,10 +5311,6 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
     }
 
     startSessionTimer();
-
-    if (footHint)
-      footHint.textContent =
-        "20 daqiqalik taymer va audio avtomatik ishga tushdi. Matn yozib bo‘lsangiz, 20 daqiqani kutmasdan ham ostidagi «AI tahlili» tugmasidan foydalanishingiz mumkin.";
 
     ta?.addEventListener("input", () => {
       saveDictationState({
@@ -5500,9 +5454,9 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
         showWritingTransitionButton();
         if (passAi) {
           finalizeListeningSuccess();
-          if (footHint) footHint.textContent = "AI tahlili: muvaffaqiyat — Reading bo‘limi ochildi.";
+          if (footHint) footHint.textContent = "AI tahlili: muvaffaqiyat — Writing bo‘limi ochildi.";
         } else if (footHint) {
-          footHint.textContent = "AI aniqligi 80%+ bo‘lsa yoki «So‘zma-so‘z» bilan 80%+ o‘xshashlik kiriting.";
+          footHint.textContent = "AI aniqligi 80%+ ga yetkazing — keyin avtomatik o‘tish ishlaydi.";
         }
       } catch (err) {
         console.error("[listening dictation] validate-dictation", err);
@@ -5513,52 +5467,44 @@ async function setupListeningDictationCard(card, studyDay, taskId, alreadyDoneSe
         aiBtn.textContent = prevAiLabel;
       }
     });
-
-    checkBtn?.addEventListener("click", () => {
-      if (!ta || !resultRoot) return;
-      const learner = String(ta.value || "").trim();
-      resultRoot.classList.remove("hidden");
-      if (!learner) {
-        resultRoot.innerHTML = `<p class="text-rose-300">Iltimos, avval diktat matnini yozing.</p>`;
-        return;
-      }
-      const { similarity, html } = buildDictationWordDiffHtml(
-        String(transcriptText || "").trim() || learner,
-        learner,
-        escapeHtmlStep11,
-      );
-      const pct = Math.round(similarity * 100);
-      const pass = similarity > 0.8;
-      resultRoot.innerHTML = `
-        <p class="mb-2 font-bold ${pass ? "text-emerald-200" : "text-rose-200"}">
-          Similarity: ${pct}% ${pass ? "— Muvaffaqiyatli" : "— Yetarli emas (80%+ kerak)"}
-        </p>
-        <p class="mb-2 text-[11px] font-bold uppercase tracking-wider text-fuchsia-200">Original transkript (matnli tahlil)</p>
-        ${html}
-      `;
-      if (pass) finalizeListeningSuccess();
-      else {
-        doneBtn.disabled = true;
-        if (footHint) footHint.textContent = "80%+ o‘xshashlikka erishing, shunda Reading ochiladi.";
-      }
-    });
   };
 
   // Auto-start: foydalanuvchi Listening bo‘limiga kirgan zahoti dars
   // komponenti (Taymer + AudioPlayer + Diktant maydoni) DARHOL yuklanadi.
   // Hech qanday «BOSHLASH» tugmasi yoki PDF havolasi yo‘q.
   const persisted = loadDictationState();
-  if (persisted && Number.isFinite(Number(persisted.startedAt))) {
-    await runDictationSession({
-      startedAt: Number(persisted.startedAt),
-      userText: String(persisted.userText ?? ""),
-      expired: Boolean(persisted.expired),
-    });
+  const startedPersist = Number(persisted?.startedAt);
+  /** Eski sessiya 20 daqiqa tugagan bo‘lsa — qayta kirganda yangi teskari sanoq boshlanadi. */
+  let sessionPayload = null;
+  if (persisted && Number.isFinite(startedPersist) && startedPersist > 0) {
+    const endAtMs = startedPersist + LISTENING_DICTIONARY_MS;
+    const remainingMs = Math.max(0, endAtMs - Date.now());
+    const wasExpired = Boolean(persisted.expired);
+    if (!wasExpired && remainingMs > 0) {
+      sessionPayload = {
+        startedAt: startedPersist,
+        userText: String(persisted.userText ?? ""),
+        expired: false,
+      };
+    } else {
+      const freshAt = Date.now();
+      saveDictationState({
+        startedAt: freshAt,
+        userText: String(persisted.userText ?? ""),
+        expired: false,
+      });
+      sessionPayload = {
+        startedAt: freshAt,
+        userText: String(persisted.userText ?? ""),
+        expired: false,
+      };
+    }
   } else {
     const autoStartAt = Date.now();
     saveDictationState({ startedAt: autoStartAt, userText: "", expired: false });
-    await runDictationSession({ startedAt: autoStartAt, userText: "", expired: false });
+    sessionPayload = { startedAt: autoStartAt, userText: "", expired: false };
   }
+  await runDictationSession(sessionPayload);
 
   // Diktant maydonini avtomatik fokuslash — foydalanuvchi yozishni darhol
   // boshlay olishi uchun. (Brauzer audio autoplay bilan bir vaqtda fokusni
@@ -9737,7 +9683,11 @@ function generatePersonalPlan(level) {
             : typeLowerForTag === "writing"
               ? "text-[10px] font-bold uppercase tracking-widest text-sky-400/90"
               : "text-[10px] font-bold uppercase tracking-widest text-fuchsia-400/90";
-    typeTag.textContent = isGrammarSectionTag ? "GRAMMAR SECTION" : item.type || "Vazifa";
+    typeTag.textContent = isGrammarSectionTag
+      ? "GRAMMAR SECTION"
+      : item.dashboardListeningDictation
+        ? "Listening"
+        : item.type || "Vazifa";
     const isTimedReadingSection =
       (level === "A2" || level === "B1") &&
       typeLowerForTag === "reading" &&
@@ -9930,8 +9880,7 @@ function generatePersonalPlan(level) {
       item.dashboardListeningDictation &&
       (level === "A2" || level === "B1")
     ) {
-      footer.className =
-        "flex flex-col gap-3 border-t border-white/5 pt-6 mt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between";
+      footer.className = "hidden";
       const alreadyDict = Boolean(sectionDone.listening_bb_dict);
       if (alreadyDict) input.checked = true;
       input.classList.add(
@@ -9948,29 +9897,30 @@ function generatePersonalPlan(level) {
         "w-px",
         "opacity-0",
       );
+      /** `setupListeningDictationCard` uchun; foydalanuvchiga chiqarilmaydi — tugatish faqat AI muvaffaqiyati bilan. */
       const statusLine = document.createElement("p");
       statusLine.setAttribute("data-lnd-foot-hint", "");
+      statusLine.setAttribute("aria-hidden", "true");
       statusLine.className =
-        "flex-1 text-xs font-semibold leading-snug text-fuchsia-200/90 order-2 sm:order-none";
-      statusLine.textContent = alreadyDict
-        ? "Diktat yakunlandi."
-        : "Bo‘limga kirgan zahoti audio + 20:00 taymer avtomatik ishga tushadi. Tugagach AI tahlili va «VAZIFANI TUGATDIM».";
+        "fixed -left-[9999px] h-px w-px overflow-hidden opacity-0";
       const finishBtn = document.createElement("button");
       finishBtn.type = "button";
       finishBtn.setAttribute("data-lnd-finish-btn", "");
+      finishBtn.setAttribute("aria-hidden", "true");
+      finishBtn.tabIndex = -1;
       finishBtn.disabled = true;
       finishBtn.className =
-        "dashboard-primary-btn order-1 w-full shrink-0 rounded-xl border border-fuchsia-500/45 bg-fuchsia-600/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.1em] text-white shadow-[0_0_18px_rgba(217,70,239,0.15)] transition hover:bg-fuchsia-600/38 disabled:pointer-events-none disabled:opacity-35 sm:order-none sm:w-auto sm:py-2.5";
-      finishBtn.textContent = alreadyDict
-        ? "VAZIFANI TUGATDIM — bajarildi"
-        : "VAZIFANI TUGATDIM";
+        "fixed -left-[9999px] h-px w-px overflow-hidden opacity-0 disabled:pointer-events-none";
+      finishBtn.textContent = alreadyDict ? "done" : "done";
       footer.append(input, label, statusLine, finishBtn);
       if (strictSequentialFlowEnabled && alreadyDict) {
         const nextBtn = document.createElement("button");
         nextBtn.type = "button";
+        nextBtn.setAttribute("aria-hidden", "true");
+        nextBtn.tabIndex = -1;
         nextBtn.className =
-          "dashboard-primary-btn order-3 w-full shrink-0 rounded-xl border border-sky-500/45 bg-sky-600/20 px-5 py-3 text-[11px] font-black uppercase tracking-[0.1em] text-sky-100 transition hover:bg-sky-600/32 sm:order-none sm:w-auto sm:py-2.5";
-        nextBtn.textContent = "Writing sectionga o'tish";
+          "fixed -left-[9999px] h-px w-px overflow-hidden opacity-0";
+        nextBtn.textContent = "next";
         nextBtn.addEventListener("click", (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
