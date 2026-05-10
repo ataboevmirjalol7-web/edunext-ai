@@ -20,15 +20,18 @@ bot.command("start", async (ctx) => {
 });
 
 bot.hears("EduNext.site uchun obuna bo'lmoqchiman 🚀", async (ctx) => {
-  const keyboard = new Keyboard().text("Obuna uchun pul to'ladim ✅").resized();
+  const keyboard = new Keyboard()
+    .text("Obuna uchun pul to'ladim ✅")
+    .resized();
 
   await ctx.reply(
     `Ha, albatta! Mana to'lov ma'lumotlari:\n\n` +
       `💳 Karta raqami: 9860190109846567\n` +
       `👤 Egasi: Kamola Otaboyeva\n` +
       `💰 Obuna narxi: 20 000 so'm (1 oy)\n\n` +
-      `👨‍💻 Admin: @@EduNextpayadmin\n\n` +
-      `⚠️ To'lov qilganingizdan keyin chekni adminga tashlashni unutmang!`,
+      `👨‍💻 Admin: @EduNextpayadmin\n\n` +
+      `⚠️ MUHIM: To'lovni amalga oshirgach, adminga chek bilan birga saytda ro'yxatdan o'tgan EMAIL manzilingizni ham yuboring! \n\n` +
+      `Bu sizni tizimda tezroq topishimizga yordam beradi. ✨`,
     { reply_markup: keyboard }
   );
 });
