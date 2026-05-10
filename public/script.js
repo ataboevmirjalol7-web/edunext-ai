@@ -8239,37 +8239,11 @@ async function setupVocabularyTaskCard(card, studyDay, taskId, alreadyDone, leve
       state = "learning";
     }
 
-    // ---------- 4) Header / shell ----------
-    const headerTitle = (s) =>
-      s === "quiz"
-        ? "Lug‘atlarni tekshirish"
-        : s === "result"
-          ? "Lug‘atlarni tekshirish — natija"
-          : "Kunlik 20 ta akademik so‘z (B1)";
-    const headerHint = (s) =>
-      s === "quiz"
-        ? "AI 10 ta random savol beradi — har biriga 7 soniya ichida inglizchasini yozing."
-        : s === "result"
-          ? "Sinov tugadi. Pastdagi «KUNLIK VAZIFANI YAKUNLASH» tugmasi orqali yakunlang."
-          : "So‘zlarni o‘qing va yodlab bo‘lganda pastki o‘ng burchakdagi katakchani belgilang. Hammasi belgilangach quiz ochiladi.";
-    const headerBadge = (s) => {
-      if (alreadyDone || s === "result") {
-        return `<span class="inline-flex items-center gap-1 rounded-full border border-emerald-400/45 bg-emerald-600/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-200">Bajarildi</span>`;
-      }
-      if (s === "quiz") {
-        return `<span class="inline-flex items-center gap-1 rounded-full border border-amber-400/45 bg-amber-600/20 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">Quiz rejimi</span>`;
-      }
-      return `<span class="inline-flex items-center gap-1 rounded-full border border-fuchsia-400/40 bg-fuchsia-600/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-200">Day ${dayNum} • B1 • ${rows.length} so‘z</span>`;
-    };
-
+    // ---------- 4) Header / shell (faqat sarlavha — batafsil matnlar olib tashlangan) ----------
     mount.innerHTML = `
     <section class="vocab-b1-wrap w-full space-y-6">
-      <header class="flex flex-wrap items-end justify-between gap-3 border-b border-fuchsia-500/20 pb-4">
-        <div class="min-w-0">
-          <h3 class="mt-1 text-lg font-black text-white sm:text-xl" data-vocab-b1-title>${headerTitle(state)}</h3>
-          <p class="mt-1 text-xs text-slate-400" data-vocab-b1-hint>${headerHint(state)}</p>
-        </div>
-        <div data-vocab-b1-badge>${headerBadge(state)}</div>
+      <header class="border-b border-fuchsia-500/20 pb-4">
+        <h3 class="text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl" data-vocab-b1-title>Vocabulary section</h3>
       </header>
 
       <div class="rounded-2xl border border-fuchsia-500/25 bg-black/35 p-4 sm:p-5">
@@ -8303,11 +8277,7 @@ async function setupVocabularyTaskCard(card, studyDay, taskId, alreadyDone, leve
 
     const updateHeader = () => {
       const titleEl = mount.querySelector("[data-vocab-b1-title]");
-      const hintEl = mount.querySelector("[data-vocab-b1-hint]");
-      const badgeEl = mount.querySelector("[data-vocab-b1-badge]");
-      if (titleEl) titleEl.textContent = headerTitle(state);
-      if (hintEl) hintEl.textContent = headerHint(state);
-      if (badgeEl) badgeEl.innerHTML = headerBadge(state);
+      if (titleEl) titleEl.textContent = "Vocabulary section";
     };
 
     // ---------- 5) Learning view ----------
@@ -9709,22 +9679,39 @@ function generatePersonalPlan(level) {
       (level === "A2" || level === "B1") &&
       typeLowerForTag === "writing" &&
       item.dashboardWriting;
+    const isVocabularyDashboardSection =
+      (level === "A2" || level === "B1") && typeLowerForTag === "vocabulary";
     const taskLine = document.createElement("p");
     taskLine.setAttribute("data-task-line", "");
     taskLine.className = isTimedReadingSection
       ? "mt-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
+      : isVocabularyDashboardSection
+        ? "mt-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
       : isWritingDashboardSection
         ? "mt-1 text-base font-semibold leading-snug text-[#c0c0c0] sm:text-lg"
         : "mt-1 text-base font-semibold leading-snug text-white sm:text-lg";
-    taskLine.textContent = isTimedReadingSection ? "Reading Section" : item.task || "";
-    if (!String(item.task || "").trim()) taskLine.classList.add("hidden");
+    taskLine.textContent = isTimedReadingSection
+      ? "Reading Section"
+      : isVocabularyDashboardSection
+        ? "Vocabulary section"
+        : item.task || "";
+    if (!String(item.task || "").trim() && !isVocabularyDashboardSection) {
+      taskLine.classList.add("hidden");
+    }
     titleBlock.append(typeTag, taskLine);
     const typeSpan = document.createElement("span");
     typeSpan.className =
       "step11-todo-type shrink-0 rounded bg-white/10 px-2 py-1 text-[9px] uppercase tracking-wider text-slate-400";
     typeSpan.textContent =
       item.dashboardListeningDictation ? "LISTENING" : item.type || "";
-    head.append(titleBlock, typeSpan);
+    if (isVocabularyDashboardSection) {
+      typeTag.classList.add("hidden");
+    }
+    if (typeLowerForTag === "vocabulary") {
+      head.append(titleBlock);
+    } else {
+      head.append(titleBlock, typeSpan);
+    }
     if (level === "B1") {
       const stepBadge = document.createElement("span");
       stepBadge.className =
