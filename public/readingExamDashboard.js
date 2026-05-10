@@ -75,11 +75,22 @@ export function gradeOneQuestion(q, userVal) {
  *   supabase?: *,
  *   userId?: string|number|null,
  *   openVocabularyWindow?: ()=>void,
+ *   onTimedReadingComplete?: () => void,
  * }} ctx
  * `payload` berilsa (masalan Supabase `reading_tasks`), shu ishlatiladi; aks holda `getTimedReadingExamPayload`.
  */
 export function setupTimedReadingExam(mount, ctx) {
-  const { tier, studyDay, apiUrlFn, escapeHtml, examSourceHint, supabase, userId, openVocabularyWindow } = ctx;
+  const {
+    tier,
+    studyDay,
+    apiUrlFn,
+    escapeHtml,
+    examSourceHint,
+    supabase,
+    userId,
+    openVocabularyWindow,
+    onTimedReadingComplete,
+  } = ctx;
   /** Review: `reading_results` yoki yakunlangan kun — taymerlar va avto-o‘tish o‘chiriladi, bosqichlar paneli ochiladi. */
   const reviewMode = Boolean(ctx.reviewMode);
   if (!mount) return;
@@ -1037,6 +1048,14 @@ ${(q.options || [])
 
     const ta = mount.querySelector("textarea[data-reading-reflection]");
     userReflection = String(ta?.value ?? "").trim();
+
+    try {
+      if (typeof onTimedReadingComplete === "function") {
+        onTimedReadingComplete();
+      }
+    } catch (_) {
+      /* ignore */
+    }
 
     void saveReadingResultsToSupabase(userReflection).then((status) => {
       readingSaveStatus = status;

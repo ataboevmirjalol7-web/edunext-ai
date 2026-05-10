@@ -7161,6 +7161,21 @@ async function setupDashboardReadingExamCard(card, studyDay, taskId, tier) {
     supabase: sb,
     userId,
     openVocabularyWindow: openVocabularyInNewWindow,
+    onTimedReadingComplete: () => {
+      markDaySectionComplete(dayNum, "reading");
+      const mainCb = card.querySelector("input.step11-todo-cb");
+      if (mainCb) {
+        mainCb.checked = true;
+        toggleTask(mainCb);
+      }
+      persistStep11Todos();
+      refreshDashboardPlanProgress(tier);
+      refreshDashboardReadingProgress(tier, dayNum);
+      const doneFooter = card.querySelector("button.step11-done-task-btn");
+      if (doneFooter) {
+        doneFooter.disabled = true;
+      }
+    },
   });
 }
 
@@ -9697,7 +9712,7 @@ function generatePersonalPlan(level) {
     const taskLine = document.createElement("p");
     taskLine.setAttribute("data-task-line", "");
     taskLine.className = isTimedReadingSection
-      ? "mt-1 text-base font-semibold leading-snug text-slate-300 sm:text-lg"
+      ? "mt-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
       : isWritingDashboardSection
         ? "mt-1 text-base font-semibold leading-snug text-[#c0c0c0] sm:text-lg"
         : "mt-1 text-base font-semibold leading-snug text-white sm:text-lg";
@@ -9728,7 +9743,12 @@ function generatePersonalPlan(level) {
       typeLower === "reading" && item.dashboardTimedReading && Boolean(sectionDone.reading);
 
     const pdfHref = item.pdfUrl || resolvePdfLinkForTaskType(item.type);
-    if (pdfHref && !item.dashboardPhasedGrammar && !readingTimedMarkedDone) {
+    if (
+      pdfHref &&
+      !item.dashboardPhasedGrammar &&
+      !readingTimedMarkedDone &&
+      !(typeLower === "reading" && item.dashboardTimedReading)
+    ) {
       const pdfBtn = document.createElement("button");
       pdfBtn.type = "button";
       pdfBtn.className =
@@ -9744,6 +9764,7 @@ function generatePersonalPlan(level) {
     if (
       item.href &&
       !(typeLower === "listening" && item.youtubeId) &&
+      !(typeLower === "reading" && item.dashboardTimedReading) &&
       (typeLower === "listening" ||
         typeLower === "reading" ||
         (typeLower === "grammar" && !item.dashboardPhasedGrammar)) &&
@@ -10090,19 +10111,19 @@ function generatePersonalPlan(level) {
           "w-px",
           "opacity-0",
         );
-        const statusLine = document.createElement("p");
-        statusLine.setAttribute("data-reading-foot-hint", "");
-        statusLine.className =
-          "flex-1 text-xs font-semibold leading-snug text-emerald-300/95 order-2";
-        statusLine.textContent = already
-          ? "Reading — vazifa belgilangan; matn va savollar baribir ochiq («reading_results» mavjud bo‘lsa javoblar qatorga tushadi). Qayta topshirish mumkin."
-          : "Matn + Part 1 bir ekranda (savollar taymerni kutmaydi) → Part 2–3 → FINISH → ✅/❌ → «AI TAHLIL». Keyin «Vazifani tugatdim».";
+        /** Ko‘rinadi — katta yozuv; `Vazifani tugatdim` yashirin (`onTimedReadingComplete` + qo‘lda kerak bo‘lsa). */
+        const readingFootLabel = document.createElement("p");
+        readingFootLabel.className =
+          "w-full text-center text-xl font-semibold leading-tight text-slate-300 sm:text-2xl md:text-3xl";
+        readingFootLabel.textContent = "Reading section";
         const doneBtn = document.createElement("button");
         doneBtn.type = "button";
+        doneBtn.setAttribute("aria-hidden", "true");
+        doneBtn.tabIndex = -1;
         doneBtn.className =
-          "dashboard-primary-btn step11-done-task-btn order-1 shrink-0 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold uppercase text-emerald-200 hover:bg-emerald-500/20 disabled:cursor-default disabled:opacity-60";
-        doneBtn.textContent = already ? "Bajarildi" : "Vazifani tugatdim";
-        doneBtn.disabled = already;
+          "fixed -left-[9999px] h-px w-px opacity-0 step11-done-task-btn pointer-events-none";
+        doneBtn.textContent = "done";
+        doneBtn.disabled = true;
         doneBtn.addEventListener("click", (ev) => {
           ev.preventDefault();
           ev.stopPropagation();
@@ -10112,12 +10133,10 @@ function generatePersonalPlan(level) {
           toggleTask(input);
           persistStep11Todos();
           doneBtn.disabled = true;
-          doneBtn.textContent = "Bajarildi";
           refreshDashboardPlanProgress(level);
           if (sectionKey === "reading") {
             refreshDashboardReadingProgress(level, studyDay);
           }
-          // Strict ketma-ketlikda: Reading tugagach Vocabulary kartasiga o‘tamiz.
           if (strictSequentialFlowEnabled && sectionKey === "reading") {
             focusNextSection("reading");
           } else {
@@ -10126,10 +10145,11 @@ function generatePersonalPlan(level) {
         });
         if (already) {
           footer.className = "hidden";
+          footer.append(input, label);
         } else {
           footer.className =
-            "flex flex-col gap-3 border-t border-white/5 pt-6 mt-2 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between";
-          footer.append(input, label, statusLine, doneBtn);
+            "mt-4 flex flex-col items-center border-t border-white/10 pt-6";
+          footer.append(input, label, readingFootLabel, doneBtn);
         }
       } else {
         const doneBtn = document.createElement("button");
