@@ -10090,44 +10090,25 @@ function generatePersonalPlan(level) {
           "w-px",
           "opacity-0",
         );
-        const statusLine = document.createElement("p");
-        statusLine.setAttribute("data-grammar-foot-hint", "");
-        statusLine.className =
-          "flex-1 text-xs font-semibold leading-snug text-fuchsia-200/90 order-2";
-        statusLine.textContent = already
-          ? "Grammar vazifasi bajarildi."
-          : "PDF ochilgach 30 daqiqa tayyorlanish, so‘ng test (20 savol). Kamida 15 ta to‘g‘ri talab qilinadi.";
-        const doneBtn = document.createElement("button");
-        doneBtn.type = "button";
-        doneBtn.className =
-          "dashboard-primary-btn step11-done-task-btn order-1 shrink-0 rounded-lg border border-fuchsia-500/40 bg-fuchsia-500/10 px-3 py-1.5 text-[10px] font-bold uppercase text-fuchsia-200 hover:bg-fuchsia-500/20 disabled:cursor-default disabled:opacity-60";
-        doneBtn.textContent = already ? "Bajarildi" : "Vazifani tugatdim";
-        doneBtn.disabled = !already;
-        doneBtn.addEventListener("click", (ev) => {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if (doneBtn.disabled) return;
-          markDaySectionComplete(studyDay, sectionKey);
-          input.checked = true;
-          toggleTask(input);
-          persistStep11Todos();
-          doneBtn.disabled = true;
-          doneBtn.textContent = "Bajarildi";
-          refreshDashboardPlanProgress(level);
-          if (strictSequentialFlowEnabled) focusNextSection("grammar");
-        });
         const grammarMount = card.querySelector(`[data-grammar-phased-mount="${taskId}"]`);
         const syncGrammarGate = () => {
           const passed = already || Boolean(grammarMount?.getAttribute("data-grammar-pass") === "1");
-          if (passed) {
-            doneBtn.disabled = false;
-            statusLine.textContent = "Tabriklaymiz! Grammar bosqichi muvaffaqiyatli tugadi. Endi vazifani yakunlang.";
-            statusLine.classList.remove("text-rose-300/95");
-            statusLine.classList.add("text-emerald-300/95");
-            strictFlowState.listeningUnlocked = true;
-            localStorage.setItem(listeningUnlockKey, "1");
-            applyStrictGrammarLocks();
+          if (!passed) return;
+          if (!input.checked) {
+            markDaySectionComplete(studyDay, sectionKey);
+            input.checked = true;
+            toggleTask(input);
+            persistStep11Todos();
+            refreshDashboardPlanProgress(level);
+            if (strictSequentialFlowEnabled) focusNextSection("grammar");
           }
+          strictFlowState.listeningUnlocked = true;
+          try {
+            localStorage.setItem(listeningUnlockKey, "1");
+          } catch (_) {
+            /* ignore */
+          }
+          applyStrictGrammarLocks();
         };
         card.addEventListener("grammar:strict-lock", (ev) => {
           const lockState = Boolean(ev?.detail?.locked);
@@ -10136,22 +10117,8 @@ function generatePersonalPlan(level) {
         });
         card.addEventListener("grammar:passed", syncGrammarGate);
         syncGrammarGate();
-        footer.className =
-          "flex flex-col gap-3 border-t border-white/5 pt-6 mt-2 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between";
-        footer.append(input, label, statusLine, doneBtn);
-        if (strictSequentialFlowEnabled && already) {
-          const nextBtn = document.createElement("button");
-          nextBtn.type = "button";
-          nextBtn.className =
-            "dashboard-primary-btn order-1 shrink-0 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-[10px] font-bold uppercase text-emerald-200 hover:bg-emerald-500/20";
-          nextBtn.textContent = "Listening sectionga o'tish";
-          nextBtn.addEventListener("click", (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            focusNextSection("grammar");
-          });
-          footer.appendChild(nextBtn);
-        }
+        footer.className = "hidden";
+        footer.append(input, label);
       } else if (sectionKey === "reading" && item.dashboardTimedReading) {
         input.classList.add(
           "fixed",
