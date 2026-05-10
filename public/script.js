@@ -7485,7 +7485,6 @@ async function setupDashboardWritingCard(
           </section>
 
           <div class="rounded-xl border border-sky-500/35 bg-sky-950/20 p-4 sm:p-5">
-            <p class="text-center text-sm font-semibold text-sky-100/95">Barcha uchalasini yozganingizdan keyin matnlarni AI tekshiradi.</p>
             <div data-writing-mentor-warning class="mt-3 hidden rounded-lg border border-amber-400/45 bg-amber-500/10 px-3 py-2 text-xs text-amber-100"></div>
             <button type="button" data-writing-check
               ${lock || !uid ? "disabled" : ""}
@@ -7496,10 +7495,9 @@ async function setupDashboardWritingCard(
           </div>
 
           <div class="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5">
-            <p class="text-xs text-slate-400">Kunlik barqarorlik: ikkala vazifa ham bazaga yoziladi.</p>
             <button type="button" data-writing-finish-day
               ${lock || !uid ? "disabled" : ""}
-              class="dashboard-primary-btn mt-4 inline-flex w-full min-h-[44px] items-center justify-center rounded-xl border border-fuchsia-500/45 bg-fuchsia-600/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-fuchsia-600/38 disabled:pointer-events-none disabled:opacity-35">
+              class="dashboard-primary-btn inline-flex w-full min-h-[44px] items-center justify-center rounded-xl border border-fuchsia-500/45 bg-fuchsia-600/25 px-5 py-3 text-[11px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-fuchsia-600/38 disabled:pointer-events-none disabled:opacity-35">
               KUNLIK VAZIFANI YAKUNLASH
             </button>
           </div>
